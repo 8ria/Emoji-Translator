@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Translator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        #loading {
+            background-color: #f5f5f5;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        #translator {
+            display: none;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #output {
+            font-size: 24px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 20px;
+            min-height: 60px;
+            word-wrap: break-word;
+        }
+        .progress {
+            height: 20px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emoji Translator</h1>
+
+    <div id="loading">
+        <h2>Loading Data...</h2>
+        <div class="progress">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <p>Please wait while we load the necessary language data. This may take a moment.</p>
+    </div>
+
+    <div id="translator">
+        <h2>Enter text to translate to emojis</h2>
+        <textarea id="input-text" rows="5" placeholder="Type something here..."></textarea>
+        <button id="translate-btn">Translate</button>
+
+        <h2>Translation</h2>
+        <div id="output"></div>
+    </div>
+
+    <script type="module">
+
+        import init, { EmojiTranslator, initialize } from './emoji_site.js';
+
+        let translator = null;
+        let loadingStatus = document.getElementById('loading');
+        let translatorUI = document.getElementById('translator');
+        let progressBar = document.getElementById('progress-bar');
+
+        async function loadData(url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Failed to load ${url}: ${response.status} ${response.statusText}`);
+            }
+            return await response.text();
+        }
+
+        async function initializeApp() {
+            try {
+
+                setProgress(10);
+                console.log("Starting initialization...");
+
+                await init();
+
+                setProgress(30);
+                console.log("WASM module loaded");
+
+                console.log("Loading GloVe embeddings...");
+                const gloveData = await loadData('static/glove.txt');
+                console.log("GloVe embeddings loaded, length:", gloveData.length);
+
+                setProgress(70);
+
+                console.log("Loading emoji data...");
+                const emojiData = await loadData('static/emoji.json');
+                console.log("Emoji data loaded, length:", emojiData.length);
+
+                setProgress(90);
+
+                translator = new EmojiTranslator();
+                translator.initialize(gloveData, emojiData);
+
+                setProgress(100);
+                console.log("Translator initialized");
+
+                setTimeout(() => {
+                    loadingStatus.style.display = 'none';
+                    translatorUI.style.display = 'block';
+                }, 500);
+
+                document.getElementById('translate-btn').addEventListener('click', translateText);
+                document.getElementById('input-text').addEventListener('keydown', function(e) {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        translateText();
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing application:", error);
+                loadingStatus.innerHTML = `
+                    <h2>Error Loading</h2>
+                    <p>There was a problem loading the necessary data: ${error.message}</p>
+                    <p>Please refresh the page to try again.</p>
+                `;
+            }
+        }
+
+        function setProgress(percent) {
+            progressBar.style.width = percent + "%";
+        }
+
+        function translateText() {
+            const inputText = document.getElementById('input-text').value;
+            const outputElement = document.getElementById('output');
+
+            if (inputText.trim() === '') {
+                outputElement.textContent = 'Please enter some text to translate.';
+                return;
+            }
+
+            try {
+                const translatedText = translator.translate_text(inputText);
+                outputElement.textContent = translatedText;
+            } catch (error) {
+                console.error("Translation error:", error);
+                outputElement.textContent = `Error during translation: ${error.message}`;
+            }
+        }
+
+        window.addEventListener('load', initializeApp);
+    </script>
+</body>
+</html>
