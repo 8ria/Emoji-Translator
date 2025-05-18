@@ -1,4 +1,4 @@
-# 🔠➡️😀 Emoji Translator
+# 😀 Emoji Translator
 
 A web application that uses WebAssembly (Wasm) and word embeddings to translate regular text into relevant emojis. The translator finds semantic connections between your words and emoji keywords using GloVe (Global Vectors for Word Representation) embeddings.
 
