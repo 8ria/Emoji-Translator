@@ -2,7 +2,7 @@
 
 A web application that uses WebAssembly (Wasm) and word embeddings to translate regular text into relevant emojis. The translator finds semantic connections between your words and emoji keywords using GloVe (Global Vectors for Word Representation) embeddings.
 
-Try it live at: [https://and-ria.github.io/Emoji-Translator](https://and-ria.github.io/Emoji-Translator)
+Try it live at: [https://8ria.github.io/Emoji-Translator](https://8ria.github.io/Emoji-Translator)
 
 ## 🧠 How It Works
 
@@ -47,7 +47,7 @@ Emoji-Translator/
 
 1. Clone this repository:
    ```
-   git clone https://github.com/and-ria/Emoji-Translator.git
+   git clone https://github.com/8ria/Emoji-Translator.git
    cd Emoji-Translator
    ```
 
