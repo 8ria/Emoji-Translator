@@ -1,5 +1,5 @@
 # 😀 Emoji Translator
-
+![Hello Earth](images/hello_earth.JPG)
 A web application that uses WebAssembly (Wasm) and word embeddings to translate regular text into relevant emojis. The translator finds semantic connections between your words and emoji keywords using GloVe (Global Vectors for Word Representation) embeddings.
 
 Try it live at: [https://8ria.github.io/Emoji-Translator](https://8ria.github.io/Emoji-Translator)
