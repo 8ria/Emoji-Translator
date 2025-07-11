@@ -19,7 +19,6 @@ impl EmojiTranslator {
     }
 
     pub fn initialize(&mut self, glove_data: &str, emoji_json: &str) -> Result<(), JsValue> {
-
         self.load_glove_embeddings(glove_data)
             .map_err(|e| JsValue::from_str(&e))?;
 
@@ -77,7 +76,6 @@ impl EmojiTranslator {
     }
 
     fn cosine_similarity(&self, a: &[f32], b: &[f32]) -> f32 {
-
         if a.len() != b.len() || a.is_empty() {
             return 0.0;
         }
