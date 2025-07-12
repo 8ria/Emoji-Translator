@@ -118,10 +118,10 @@ export class EmojiTransformer {
      * @param {string} input_text
      * @returns {any}
      */
-    transform(input_text) {
+    slay(input_text) {
         const ptr0 = passStringToWasm0(input_text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.emojitransformer_transform(this.__wbg_ptr, ptr0, len0);
+        const ret = wasm.emojitransformer_slay(this.__wbg_ptr, ptr0, len0);
         return ret;
     }
 }
