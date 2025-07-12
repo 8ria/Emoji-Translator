@@ -80,22 +80,22 @@ function takeFromExternrefTable0(idx) {
     return value;
 }
 
-const EmojiTransformerFinalization = (typeof FinalizationRegistry === 'undefined')
+const EmojiStylistFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_emojitransformer_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_emojistylist_free(ptr >>> 0, 1));
 
-export class EmojiTransformer {
+export class EmojiStylist {
 
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-        EmojiTransformerFinalization.unregister(this);
+        EmojiStylistFinalization.unregister(this);
         return ptr;
     }
 
     free() {
         const ptr = this.__destroy_into_raw();
-        wasm.__wbg_emojitransformer_free(ptr, 0);
+        wasm.__wbg_emojistylist_free(ptr, 0);
     }
     /**
      * @param {string} emoji_json
@@ -106,12 +106,12 @@ export class EmojiTransformer {
         const len0 = WASM_VECTOR_LEN;
         const ptr1 = passStringToWasm0(glove_txt, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len1 = WASM_VECTOR_LEN;
-        const ret = wasm.emojitransformer_new(ptr0, len0, ptr1, len1);
+        const ret = wasm.emojistylist_new(ptr0, len0, ptr1, len1);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
         this.__wbg_ptr = ret[0] >>> 0;
-        EmojiTransformerFinalization.register(this, this.__wbg_ptr, this);
+        EmojiStylistFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
     /**
@@ -121,7 +121,7 @@ export class EmojiTransformer {
     slay(input_text) {
         const ptr0 = passStringToWasm0(input_text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.emojitransformer_slay(this.__wbg_ptr, ptr0, len0);
+        const ret = wasm.emojistylist_slay(this.__wbg_ptr, ptr0, len0);
         return ret;
     }
 }
