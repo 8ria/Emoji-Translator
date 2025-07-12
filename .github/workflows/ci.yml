@@ -31,8 +31,9 @@ jobs:
           cp -r static/* pkg/static/
           cp site/index.html pkg/
 
-      - name: 🚀 Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.G_TOKEN }}
           publish_dir: ./pkg
+          publish_branch: main
