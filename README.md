@@ -103,7 +103,6 @@ Pull requests are welcome! Feel free to:
 ## 📄 License
 
 MIT © AndriaK
-Feel free to slay it your way 💅🏻
 
 ---
 
