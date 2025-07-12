@@ -2,15 +2,13 @@ name: Build and Deploy WASM
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Checkout main branch
+      - name: ⬇️ Checkout code
         uses: actions/checkout@v4
 
       - name: 🦀 Install Rust
@@ -23,14 +21,18 @@ jobs:
       - name: 📦 Install wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
 
-      - name: 🛠️ Build WASM for Web
+      - name: 🔨 Build WASM
         run: wasm-pack build --target web --out-dir pkg
 
-      - name: 🚀 Deploy pkg/ to gh-pages
+      - name: 📁 Debug: List pkg directory
+        run: ls -la ./pkg
+
+      - name: 🚀 Deploy only pkg/ to gh-pages/pkg
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./pkg
-          publish_branch: gh-pages
+          publish_dir: pkg
           destination_dir: pkg
+          publish_branch: gh-pages
           keep_files: true
+          force_orphan: false
