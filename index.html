@@ -368,7 +368,7 @@
   </div>
 
   <script type="module">
-    import init, { EmojiTransformer } from './pkg/subslay.js';
+    import init, { EmojiStylist } from './pkg/subslay.js';
 
     let transformer = null;
     const statusEl = document.getElementById('status');
@@ -390,7 +390,7 @@
           throw new Error('Failed to load required files');
         }
 
-        transformer = new EmojiTransformer(
+        transformer = new EmojiStylist(
           await emojiResponse.text(), 
           await gloveResponse.text()
         );
