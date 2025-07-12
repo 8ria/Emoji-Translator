@@ -425,7 +425,7 @@
       }
 
       try {
-        const result = transformer.transform(inputText);
+        const result = transformer.slay(inputText);
         outputEl.textContent = result.join(' ');
         outputEl.classList.add('active');
         outputEl.classList.remove('empty');
