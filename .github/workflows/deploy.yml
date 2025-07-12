@@ -2,6 +2,7 @@ name: Build and Deploy WASM
 
 on:
   workflow_dispatch:
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -26,12 +27,12 @@ jobs:
       - name: 📁 Debug output
         run: ls -la ./pkg
 
-      - name: 🚀 Deploy only pkg/ to gh-pages/pkg (preserve all other files)
+      - name: 🚀 Deploy pkg/ to gh-pages/pkg (force commit)
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./pkg
           publish_branch: gh-pages
           destination_dir: pkg
-          keep_files: true     # ✅ Critical: keep index.html and static/
-          force_orphan: false  # ✅ Do NOT wipe history anymore
+          keep_files: true
+          commit_message: "🚀 Deploy pkg folder from main on ${{ github.sha }}"
