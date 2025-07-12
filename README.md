@@ -25,6 +25,8 @@ The Rust core powers the logic. The frontend is statically hosted via GitHub Pag
 - 🎨 Sleek animated UI with a gradient-glow glass aesthetic
 - 🔥 Instant transformation with debounced input
 
+> ✨ **Example**: `"Hello, World!"` -> `"👋 🌏"`
+
 ---
 
 ## 🛠️ How It Works
