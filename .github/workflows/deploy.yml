@@ -11,7 +11,7 @@ jobs:
       - name: ⬇️ Checkout code
         uses: actions/checkout@v4
 
-      - name: 🦀 Install Rust
+      - name: 🦀 Install Rust toolchain with wasm target
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -24,16 +24,19 @@ jobs:
       - name: 🔨 Build WASM to pkg/
         run: wasm-pack build --target web --out-dir pkg
 
-      - name: 📁 Show pkg contents (debugging)
+      - name: 📁 Show pkg contents (debug)
         run: ls -lah ./pkg
 
-      - name: 🚀 Deploy pkg/ to gh-pages/pkg
+      - name: 📂 Prepare deploy folder with nested pkg
+        run: |
+          mkdir -p deploy/pkg
+          cp -r pkg/* deploy/pkg/
+
+      - name: 🚀 Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./pkg
+          publish_dir: ./deploy
           publish_branch: gh-pages
-          destination_dir: pkg
-          keep_files: true
+          keep_files: false
           commit_message: "🚀 Deploy pkg from ${{ github.sha }}"
-          allow_empty_commit: true
