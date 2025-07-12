@@ -21,13 +21,13 @@ jobs:
       - name: 📦 Install wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
 
-      - name: 🔨 Build WASM
+      - name: 🔨 Build WASM to pkg/
         run: wasm-pack build --target web --out-dir pkg
 
-      - name: 📁 List pkg contents
-        run: ls -lah ./pkg
+      - name: 📁 Debug output
+        run: ls -la ./pkg
 
-      - name: 🚀 Deploy pkg/ to gh-pages/pkg
+      - name: 🚀 Deploy pkg/ to gh-pages/pkg (force update)
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,3 +35,4 @@ jobs:
           publish_branch: gh-pages
           destination_dir: pkg
           keep_files: true
+          force_orphan: true
