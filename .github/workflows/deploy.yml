@@ -1,0 +1,36 @@
+name: Build and Deploy WASM
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout main branch
+        uses: actions/checkout@v4
+
+      - name: 🦀 Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+          override: true
+
+      - name: 📦 Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+
+      - name: 🛠️ Build WASM for Web
+        run: wasm-pack build --target web --out-dir pkg
+
+      - name: 🚀 Deploy pkg/ to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./pkg
+          publish_branch: gh-pages
+          destination_dir: pkg
+          keep_files: true
