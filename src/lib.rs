@@ -1,132 +1,103 @@
 use std::collections::HashMap;
-use serde_json::Value;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsValue;
+use strsim::levenshtein;
+use serde_wasm_bindgen::to_value;
 
 #[wasm_bindgen]
-pub struct EmojiTranslator {
+pub struct EmojiTransformer {
+    keyword_to_emoji: HashMap<String, String>,
     embeddings: HashMap<String, Vec<f32>>,
-    emoji_keywords: HashMap<String, Vec<String>>,
 }
 
 #[wasm_bindgen]
-impl EmojiTranslator {
-    #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
-        Self {
-            embeddings: HashMap::new(),
-            emoji_keywords: HashMap::new(),
-        }
-    }
+impl EmojiTransformer {
+    #[wasm_bindgen(constructor)] 
+    pub fn new(emoji_json: &str, glove_txt: &str) -> Result<EmojiTransformer, JsValue> {
+        let emoji_to_keywords: HashMap<String, Vec<String>> =
+            serde_json::from_str(emoji_json).map_err(|e| JsValue::from_str(&format!("Emoji JSON error: {}", e)))?; 
 
-    pub fn initialize(&mut self, glove_data: &str, emoji_json: &str) -> Result<(), JsValue> {
-        self.load_glove_embeddings(glove_data)
-            .map_err(|e| JsValue::from_str(&e))?;
-
-        self.load_emoji_keywords(emoji_json)
-            .map_err(|e| JsValue::from_str(&e))?;
-
-        Ok(())
-    }
-
-    fn load_glove_embeddings(&mut self, data: &str) -> Result<(), String> {
-        let lines = data.lines();
-
-        for line in lines {
-            let parts: Vec<&str> = line.split_whitespace().collect();
-
-            if parts.len() > 1 {
-                if let Some(word) = parts.first() {
-                    let values = &parts[1..];
-                    let vector: Vec<f32> = values
-                        .iter()
-                        .filter_map(|s| s.parse::<f32>().ok())
-                        .collect();
-
-                    if !vector.is_empty() {
-                        self.embeddings.insert(word.to_string(), vector);
-                    }
-                }
+        let mut keyword_to_emoji = HashMap::new();
+        for (emoji, keywords) in emoji_to_keywords {
+            for keyword in keywords {
+                keyword_to_emoji.insert(keyword, emoji.clone());
             }
         }
-        Ok(())
-    }
 
-    fn load_emoji_keywords(&mut self, json_str: &str) -> Result<(), String> {
-        let json: Value = serde_json::from_str(json_str)
-            .map_err(|e| format!("Error parsing JSON: {}", e))?;
-
-        if let Value::Object(map) = json {
-            for (emoji, keywords) in map {
-                if let Value::Array(keyword_array) = keywords {
-                    let keywords_vec: Vec<String> = keyword_array
-                        .iter()
-                        .filter_map(|k| k.as_str().map(String::from))
-                        .collect();
-
-                    self.emoji_keywords.insert(emoji, keywords_vec);
-                }
+        let mut embeddings = HashMap::new();
+        for line in glove_txt.lines() {
+            let mut parts = line.split_whitespace();
+            if let Some(word) = parts.next() {
+                let vec = parts.map(|s| s.parse::<f32>().unwrap_or(0.0)).collect::<Vec<f32>>();
+                embeddings.insert(word.to_string(), vec);
             }
         }
-        Ok(())
+
+        Ok(EmojiTransformer { 
+            keyword_to_emoji, embeddings,
+        })
     }
 
-    pub fn translate_text(&self, text: &str) -> String {
-        let filtered_text = self.filter_text(text);
-        self.process_text(&filtered_text)
-    }
+    #[wasm_bindgen]
+    pub fn transform(&self, input_text: &str) -> JsValue {
+        let words: Vec<String> = input_text
+            .chars()
+            .filter(|c| c.is_alphabetic() || c.is_whitespace())
+            .collect::<String>()
+            .split_whitespace()
+            .map(|s| s.to_lowercase())
+            .collect();
 
-    fn cosine_similarity(&self, a: &[f32], b: &[f32]) -> f32 {
-        if a.len() != b.len() || a.is_empty() {
-            return 0.0;
-        }
+        let mut result = vec![];
 
-        let dot_product: f32 = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum();
-        let norm_a = a.iter().map(|x| x * x).sum::<f32>().sqrt();
-        let norm_b = b.iter().map(|x| x * x).sum::<f32>().sqrt();
+        for word in words {
+            if let Some(emoji) = self.keyword_to_emoji.get(&word) {
+                result.push(emoji.clone());
+                continue;
+            }
 
-        match (norm_a, norm_b) {
-            (0.0, _) | (_, 0.0) => 0.0,
-            _ => dot_product / (norm_a * norm_b)
-        }
-    }
+            if let Some(word_embedding) = self.embeddings.get(&word) {
+                let mut best_match: Option<(String, f32)> = None; 
 
-    fn process_text(&self, text: &str) -> String {
-        let words: Vec<&str> = text.split_whitespace().collect();
-        let mut result: Vec<String> = Vec::with_capacity(words.len());
-
-        for word in words.iter() {
-            let word_lc = word.to_lowercase();
-            let mut best_match: Option<(String, f32)> = None;
-
-            if let Some(word_vec) = self.embeddings.get(&word_lc) {
-                for (emoji, keywords) in &self.emoji_keywords {
-                    for kw in keywords {
-                        if let Some(kw_vec) = self.embeddings.get(kw) {
-                            let sim = self.cosine_similarity(word_vec, kw_vec);
-
-                            if sim > 0.5 && (best_match.is_none() || sim > best_match.as_ref().unwrap().1) {
-                                best_match = Some((emoji.clone(), sim));
-                            }
+                for(keyword, emoji) in &self.keyword_to_emoji {
+                    if let Some(keyword_embedding) = self.embeddings.get(keyword) {
+                        let sim = cosine_similarity(word_embedding, keyword_embedding);
+                        if best_match.is_none() || sim > best_match.as_ref().unwrap().1 { 
+                            best_match = Some((emoji.clone(), sim));
                         }
                     }
                 }
-
-                if let Some((emoji, _)) = best_match {
-                    result.push(emoji);
+                
+                if let Some((best_emoji, _)) = best_match {
+                    result.push(best_emoji);
+                    continue;
                 }
             }
-        }
-        result.join(" ")
-    }
 
-    fn filter_text(&self, text: &str) -> String {
-        text.chars()
-            .filter(|c| c.is_alphanumeric() || c.is_whitespace() || c == &'.')
-            .collect()
+            let mut best_match: Option<(String, usize)> = None;
+            for (keyword, emoji) in &self.keyword_to_emoji {
+                let dist = levenshtein(&word, keyword);
+                if best_match.is_none() || dist < best_match.as_ref().unwrap().1 {
+                    best_match = Some((emoji.clone(), dist));
+                }
+            }
+
+            if let Some((emoji, _)) = best_match {
+                result.push(emoji);
+            } else {
+                result.push("@".to_string());
+            }
+        }
+        to_value(&result).unwrap()
     }
 }
 
-#[wasm_bindgen]
-pub fn initialize() -> i32 {
-    0
+fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
+    let dot = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum::<f32>();
+    let norm_a = a.iter().map(|x| x * x).sum::<f32>().sqrt();
+    let norm_b = b.iter().map(|x| x * x).sum::<f32>().sqrt();
+    if norm_a == 0.0 || norm_b == 0.0 {
+        return -1.0;
+    }
+    dot / (norm_a * norm_b)
 }
