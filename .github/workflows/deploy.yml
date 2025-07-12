@@ -11,7 +11,7 @@ jobs:
       - name: ⬇️ Checkout code
         uses: actions/checkout@v4
 
-      - name: 🦀 Install Rust toolchain with wasm target
+      - name: 🦀 Install Rust with wasm target
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -27,16 +27,18 @@ jobs:
       - name: 📁 Show pkg contents (debug)
         run: ls -lah ./pkg
 
-      - name: 📂 Prepare deploy folder with nested pkg
+      - name: 🗂️ Clone existing gh-pages branch
         run: |
-          mkdir -p deploy/pkg
-          cp -r pkg/* deploy/pkg/
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git clone --branch gh-pages --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} gh-pages
+          rm -rf gh-pages/pkg
+          mkdir -p gh-pages/pkg
+          cp -r pkg/* gh-pages/pkg/
 
-      - name: 🚀 Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./deploy
-          publish_branch: gh-pages
-          keep_files: false
-          commit_message: "🚀 Deploy pkg from ${{ github.sha }}"
+      - name: 🚀 Push updated pkg/ to gh-pages
+        run: |
+          cd gh-pages
+          git add pkg
+          git commit -m "🚀 Update pkg folder from ${{ github.sha }}" || echo "No changes to commit"
+          git push origin gh-pages
