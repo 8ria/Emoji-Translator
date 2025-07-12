@@ -1,127 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sub💅🏻</title>
-    <style>
-        body {
-            font-family: system-ui, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f8f9fa;
-        }
-        
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sub💅🏻</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fuchsia: #FF00A8;
+      --laser-lime: #CFFF04;
+      --ultraviolet: #9400D3;
+      --glass-black: #121212;
+      --soft-white: #F5F5F5;
+      --card-bg: #1F1F1F;
+      --section-bg: #1A1A1A;
+    }
 
-        h3 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-        
-        textarea, #output {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            min-height: 100px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-        }
-        
-        textarea {
-            resize: vertical;
-        }
-        
-        #output {
-            background: white;
-            font-size: 20px;
-            line-height: 1.5;
-            word-wrap: break-word;
-        }
-        
-        #status {
-            text-align: center;
-            margin-bottom: 15px;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        
-        .loading { background: #fff3cd; color: #856404; }
-        .ready { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-    </style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, var(--glass-black) 0%, #1A1A1A 100%);
+      color: var(--soft-white);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .app-section {
+      background: var(--section-bg);
+      padding: 4rem 2rem;
+      border-radius: 20px;
+      max-width: 800px;
+      width: 100%;
+      border: 1px solid #333;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .app-title {
+      text-align: center;
+      font-size: 2rem;
+      color: var(--laser-lime);
+      margin-bottom: 2rem;
+      text-shadow: 0 0 10px var(--laser-lime);
+    }
+
+    .input-container {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 20px;
+      border: 2px solid #333;
+      border-radius: 15px;
+      font-size: 16px;
+      min-height: 120px;
+      background: var(--card-bg);
+      color: var(--soft-white);
+      font-family: 'Outfit', sans-serif;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--fuchsia);
+      box-shadow: 0 0 20px rgba(255, 0, 168, 0.3);
+    }
+
+    textarea::placeholder {
+      color: #666;
+    }
+
+    .output-container {
+      background: var(--card-bg);
+      border: 2px solid #333;
+      border-radius: 15px;
+      padding: 20px;
+      min-height: 120px;
+      font-size: 20px;
+      line-height: 1.6;
+      word-wrap: break-word;
+      transition: all 0.3s ease;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .output-container.active {
+      border-color: var(--laser-lime);
+      box-shadow: 0 0 20px rgba(207, 255, 4, 0.2);
+    }
+
+    .status {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .status.loading {
+      background: linear-gradient(45deg, #FFB800, #FFA500);
+      color: #000;
+      animation: pulse 1.5s infinite;
+    }
+
+    .status.ready {
+      background: linear-gradient(45deg, var(--laser-lime), #00FF88);
+      color: #000;
+    }
+
+    .status.error {
+      background: linear-gradient(45deg, #FF4444, #CC0000);
+      color: white;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .loading-dots {
+      display: inline-block;
+      animation: loadingDots 1.5s infinite;
+    }
+
+    @keyframes loadingDots {
+      0%, 20% { opacity: 1; }
+      50% { opacity: 0.3; }
+      80%, 100% { opacity: 1; }
+    }
+
+    .footer-text {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #333;
+    }
+
+    @media (max-width: 768px) {
+      .app-section {
+        margin: 1rem;
+        padding: 2rem 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Sub💅🏻</h1>
-    <h3>Text to Emoji</h3>
+
+  <section class="app-section">
+    <h2 class="app-title">🎭 Text to Emoji Transformer</h2>
     
-    <div id="status" class="loading">Loading...</div>
+    <div class="status loading" id="status">
+      <span class="loading-dots">Loading awesome sauce...</span>
+    </div>
     
-    <textarea id="input" placeholder="Type your text here..." disabled></textarea>
+    <div class="input-container">
+      <textarea id="input" placeholder="Type your text here and watch the magic happen... ✨" disabled></textarea>
+    </div>
     
-    <div id="output"></div>
+    <div class="output-container" id="output">
+      <span style="color: #666;">Your emoji-fied text will appear here...</span>
+    </div>
 
-    <script type="module">
-        import init, { EmojiTransformer } from './pkg/subslay.js';
+    <div class="footer-text">
+      &copy; 2025 SubSlay — Built to Slay, Not Obey 💅
+    </div>
+  </section>
 
-        let transformer = null;
-        const status = document.getElementById('status');
-        const input = document.getElementById('input');
-        const output = document.getElementById('output');
+  <script type="module">
+    import init, { EmojiTransformer } from './pkg/subslay.js';
 
-        async function load() {
-            try {
-                await init('./pkg/subslay_bg.wasm');
-                
-                const [emojiRes, gloveRes] = await Promise.all([
-                    fetch('./static/emoji.json'),
-                    fetch('./static/glove.txt')
-                ]);
+    let transformer = null;
+    const status = document.getElementById('status');
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
 
-                const emojiJson = await emojiRes.text();
-                const gloveText = await gloveRes.text();
+    async function load() {
+      try {
+        await init('./pkg/subslay_bg.wasm');
+        
+        const [emojiRes, gloveRes] = await Promise.all([
+          fetch('./static/emoji.json'),
+          fetch('./static/glove.txt')
+        ]);
 
-                transformer = new EmojiTransformer(emojiJson, gloveText);
-                
-                status.textContent = 'Ready';
-                status.className = 'ready';
-                input.disabled = false;
-                
-            } catch (error) {
-                status.textContent = 'Error: ' + error.message;
-                status.className = 'error';
-            }
-        }
+        const emojiJson = await emojiRes.text();
+        const gloveText = await gloveRes.text();
 
-        function transform() {
-            if (!transformer || !input.value.trim()) {
-                output.textContent = '';
-                return;
-            }
+        transformer = new EmojiTransformer(emojiJson, gloveText);
+        
+        status.textContent = '✅ Ready to slay!';
+        status.className = 'status ready';
+        input.disabled = false;
+        input.focus();
+        
+      } catch (error) {
+        status.textContent = '❌ Error: ' + error.message;
+        status.className = 'status error';
+        console.error('Loading error:', error);
+      }
+    }
 
-            try {
-                const result = transformer.transform(input.value.trim());
-                output.textContent = result.join(' ');
-            } catch (error) {
-                output.textContent = 'Error transforming text';
-            }
-        }
+    function transform() {
+      if (!transformer || !input.value.trim()) {
+        output.innerHTML = '<span style="color: #666;">Your emoji-fied text will appear here...</span>';
+        output.classList.remove('active');
+        return;
+      }
 
-        input.addEventListener('input', () => {
-            clearTimeout(input.timer);
-            input.timer = setTimeout(transform, 300);
-        });
+      try {
+        const result = transformer.transform(input.value.trim());
+        output.textContent = result.join(' ');
+        output.classList.add('active');
+      } catch (error) {
+        output.textContent = '❌ Error transforming text';
+        output.classList.remove('active');
+        console.error('Transform error:', error);
+      }
+    }
 
-        load();
-    </script>
+    input.addEventListener('input', () => {
+      clearTimeout(input.timer);
+      input.timer = setTimeout(transform, 300);
+    });
+
+    load();
+  </script>
+
 </body>
 </html>
