@@ -24,7 +24,14 @@ jobs:
       - name: 🔨 Build WASM to pkg/
         run: wasm-pack build --target web --out-dir pkg
 
-      - name: 📁 Show pkg contents (debug)
+      - name: 🧹 Remove unwanted files from pkg/
+        run: |
+          rm -f pkg/README.md
+          rm -f pkg/package.json
+          rm -f pkg/subslay.d.ts
+          rm -f pkg/subslay_bg.wasm.d.ts
+
+      - name: 📁 Show cleaned pkg contents (debug)
         run: ls -lah ./pkg
 
       - name: 🗂️ Clone existing gh-pages branch
