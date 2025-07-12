@@ -31,8 +31,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: pkg
-          destination_dir: pkg
+          publish_dir: ./pkg
           publish_branch: gh-pages
+          destination_dir: pkg
           keep_files: true
-          force_orphan: false
