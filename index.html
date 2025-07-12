@@ -11,7 +11,7 @@
       margin: 0;
       padding: 0;
     }
-    
+
     :root {
       --bg-primary: #0a0a0a;
       --bg-secondary: #1a1a1a;
@@ -26,7 +26,7 @@
       --glass-border: rgba(255, 255, 255, 0.1);
       --shadow-glow: 0 0 40px rgba(255, 0, 110, 0.3);
     }
-    
+
     body {
       background: 
         radial-gradient(circle at 20% 20%, var(--accent-pink) 0%, transparent 50%),
@@ -43,7 +43,7 @@
       position: relative;
       overflow-x: hidden;
     }
-    
+
     body::before {
       content: '';
       position: fixed;
@@ -57,7 +57,7 @@
       pointer-events: none;
       z-index: -1;
     }
-    
+
     .container {
       background: var(--glass-bg);
       backdrop-filter: blur(24px);
@@ -72,7 +72,7 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     .container::before {
       content: '';
       position: absolute;
@@ -83,7 +83,7 @@
       background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.02), transparent);
       pointer-events: none;
     }
-    
+
     .title {
       text-align: center;
       font-size: clamp(2.5rem, 5vw, 3.5rem);
@@ -95,7 +95,7 @@
       gap: 0.75rem;
       position: relative;
     }
-    
+
     .title-text {
       background: linear-gradient(
         45deg, 
@@ -112,13 +112,13 @@
       animation: gradientShift 6s ease-in-out infinite;
       filter: drop-shadow(0 0 20px rgba(255, 0, 110, 0.4));
     }
-    
+
     .title-emoji {
       font-size: clamp(2.5rem, 5vw, 3.5rem);
       filter: drop-shadow(0 0 15px rgba(255, 0, 110, 0.6));
       animation: bounce 3s ease-in-out infinite;
     }
-    
+
     .subtitle {
       text-align: center;
       font-size: 1.1rem;
@@ -127,17 +127,17 @@
       font-weight: 500;
       opacity: 0.8;
     }
-    
+
     .input-section {
       display: grid;
       gap: 2rem;
       margin-bottom: 2rem;
     }
-    
+
     .input-wrapper {
       position: relative;
     }
-    
+
     .input-label {
       font-size: 0.9rem;
       font-weight: 600;
@@ -147,7 +147,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    
+
     textarea {
       width: 100%;
       padding: 1.75rem;
@@ -162,7 +162,7 @@
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       backdrop-filter: blur(12px);
     }
-    
+
     textarea:focus {
       outline: none;
       border-color: var(--accent-pink);
@@ -171,16 +171,16 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
       transform: translateY(-2px);
     }
-    
+
     textarea::placeholder {
       color: rgba(255, 255, 255, 0.4);
       font-style: italic;
     }
-    
+
     .output-wrapper {
       position: relative;
     }
-    
+
     .output {
       width: 100%;
       padding: 1.75rem;
@@ -198,7 +198,7 @@
       backdrop-filter: blur(12px);
       font-weight: 500;
     }
-    
+
     .output.active {
       border-color: var(--accent-purple);
       box-shadow: 
@@ -206,12 +206,12 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
       transform: translateY(-2px);
     }
-    
+
     .output.empty {
       color: rgba(255, 255, 255, 0.4);
       font-style: italic;
     }
-    
+
     .status {
       text-align: center;
       padding: 1.25rem 2rem;
@@ -223,26 +223,26 @@
       backdrop-filter: blur(12px);
       font-size: 1.1rem;
     }
-    
+
     .status.loading {
       background: linear-gradient(45deg, var(--accent-yellow), var(--accent-green));
       color: var(--bg-primary);
       animation: statusPulse 2s ease-in-out infinite;
       border-color: rgba(255, 255, 255, 0.2);
     }
-    
+
     .status.ready {
       background: linear-gradient(45deg, var(--accent-green), var(--accent-blue));
       color: var(--bg-primary);
       box-shadow: 0 0 30px rgba(6, 255, 165, 0.3);
     }
-    
+
     .status.error {
       background: linear-gradient(45deg, #ff4757, #ff3838);
       color: var(--text-primary);
       box-shadow: 0 0 30px rgba(255, 71, 87, 0.3);
     }
-    
+
     .footer {
       text-align: center;
       font-size: 0.9rem;
@@ -252,30 +252,29 @@
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       font-weight: 500;
     }
-    
+
     .footer::before {
       content: '✨';
       margin-right: 0.5rem;
     }
-    
+
     .footer::after {
       content: '✨';
       margin-left: 0.5rem;
     }
-    
-    /* Animations */
+
     @keyframes gradientShift {
       0%, 100% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
     }
-    
+
     @keyframes bounce {
       0%, 100% { transform: translateY(0) rotate(0deg); }
       25% { transform: translateY(-5px) rotate(5deg); }
       50% { transform: translateY(0) rotate(0deg); }
       75% { transform: translateY(-3px) rotate(-3deg); }
     }
-    
+
     @keyframes statusPulse {
       0%, 100% { 
         opacity: 1; 
@@ -288,53 +287,51 @@
         box-shadow: 0 0 40px rgba(255, 190, 11, 0.5);
       }
     }
-    
-    /* Responsive Design */
+
     @media (max-width: 768px) {
       .container {
         padding: 2rem;
         margin: 0.75rem;
         border-radius: 24px;
       }
-      
+
       .title {
         font-size: 2.5rem;
         gap: 0.5rem;
       }
-      
+
       .subtitle {
         font-size: 1rem;
       }
-      
+
       textarea, .output {
         padding: 1.5rem;
         font-size: 1rem;
         min-height: 120px;
       }
-      
+
       .status {
         padding: 1rem 1.5rem;
         font-size: 1rem;
       }
     }
-    
+
     @media (max-width: 480px) {
       .container {
         padding: 1.5rem;
         margin: 0.5rem;
       }
-      
+
       .input-section {
         gap: 1.5rem;
       }
-      
+
       textarea, .output {
         padding: 1.25rem;
         font-size: 0.95rem;
       }
     }
-    
-    /* Accessibility */
+
     @media (prefers-reduced-motion: reduce) {
       * {
         animation-duration: 0.01ms !important;
@@ -350,9 +347,9 @@
       <span class="title-text">Sub</span>
       <span class="title-emoji">💅🏻</span>
     </h1>
-    
+
     <div class="status loading" id="status">Loading awesome sauce...</div>
-    
+
     <div class="input-section">
       <div class="input-wrapper">
         <textarea 
@@ -361,7 +358,7 @@
           disabled
         ></textarea>
       </div>
-      
+
       <div class="output-wrapper">
         <div class="output empty" id="output">Your emoji-fied text will appear here...</div>
       </div>
@@ -378,14 +375,12 @@
     const inputEl = document.getElementById('input');
     const outputEl = document.getElementById('output');
 
-
-
     async function initializeApp() {
       try {
         statusEl.textContent = 'Loading awesome sauce...';
-        
+
         await init('./pkg/subslay_bg.wasm');
-        
+
         const [emojiResponse, gloveResponse] = await Promise.all([
           fetch('./static/emoji.json'),
           fetch('./static/glove.txt')
@@ -399,20 +394,19 @@
           await emojiResponse.text(), 
           await gloveResponse.text()
         );
-        
+
         statusEl.textContent = '✅ Ready to slay!';
         statusEl.className = 'status ready';
         inputEl.disabled = false;
         inputEl.focus();
-        
-        // Add a little celebration
+
         setTimeout(() => {
           statusEl.style.transform = 'scale(1.05)';
           setTimeout(() => {
             statusEl.style.transform = 'scale(1)';
           }, 200);
         }, 100);
-        
+
       } catch (error) {
         statusEl.textContent = '❌ Error: ' + error.message;
         statusEl.className = 'status error';
@@ -422,7 +416,7 @@
 
     function transformText() {
       const inputText = inputEl.value.trim();
-      
+
       if (!transformer || !inputText) {
         outputEl.textContent = 'Your emoji-fied text will appear here...';
         outputEl.classList.remove('active');
@@ -435,13 +429,12 @@
         outputEl.textContent = result.join(' ');
         outputEl.classList.add('active');
         outputEl.classList.remove('empty');
-        
-        // Add a little animation when text transforms
+
         outputEl.style.transform = 'translateY(-5px)';
         setTimeout(() => {
           outputEl.style.transform = 'translateY(-2px)';
         }, 200);
-        
+
       } catch (error) {
         outputEl.textContent = '❌ Error transforming text';
         outputEl.classList.remove('active');
@@ -450,14 +443,12 @@
       }
     }
 
-    // Debounced input handler for better performance
     let transformTimer;
     inputEl.addEventListener('input', () => {
       clearTimeout(transformTimer);
       transformTimer = setTimeout(transformText, 250);
     });
 
-    // Add some keyboard shortcuts for the culture
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey || e.metaKey) {
         switch (e.key) {
@@ -475,7 +466,6 @@
       }
     });
 
-    // Initialize the app
     initializeApp();
   </script>
 </body>
