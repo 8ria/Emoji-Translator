@@ -5,15 +5,15 @@ use strsim::levenshtein;
 use serde_wasm_bindgen::to_value;
 
 #[wasm_bindgen]
-pub struct EmojiTransformer {
+pub struct EmojiStylist {
     keyword_to_emoji: HashMap<String, String>,
     word_embeddings: HashMap<String, Vec<f32>>,
 }
 
 #[wasm_bindgen]
-impl EmojiTransformer {
+impl EmojiStylist {
     #[wasm_bindgen(constructor)] 
-    pub fn new(emoji_json: &str, glove_txt: &str) -> Result<EmojiTransformer, JsValue> {
+    pub fn new(emoji_json: &str, glove_txt: &str) -> Result<EmojiStylist, JsValue> {
         let emoji_keyword_map: HashMap<String, Vec<String>> =
             serde_json::from_str(emoji_json).map_err(|e| JsValue::from_str(&format!("Emoji JSON error: {}", e)))?; 
 
@@ -33,7 +33,7 @@ impl EmojiTransformer {
             }
         }
 
-        Ok(EmojiTransformer { 
+        Ok(EmojiStylist { 
             keyword_to_emoji, word_embeddings,
         })
     }
