@@ -24,10 +24,10 @@ jobs:
       - name: 🔨 Build WASM to pkg/
         run: wasm-pack build --target web --out-dir pkg
 
-      - name: 📁 Debug output
-        run: ls -la ./pkg
+      - name: 📁 Show pkg contents (debugging)
+        run: ls -lah ./pkg
 
-      - name: 🚀 Deploy pkg/ to gh-pages/pkg (force commit)
+      - name: 🚀 Deploy pkg/ to gh-pages/pkg
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,4 +35,5 @@ jobs:
           publish_branch: gh-pages
           destination_dir: pkg
           keep_files: true
-          commit_message: "🚀 Deploy pkg folder from main on ${{ github.sha }}"
+          commit_message: "🚀 Deploy pkg from ${{ github.sha }}"
+          allow_empty_commit: true
