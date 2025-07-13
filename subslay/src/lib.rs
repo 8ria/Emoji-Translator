@@ -1,17 +1,18 @@
 use std::collections::HashMap;
 use serde::Deserialize;
+use half::f16;
 
 const EMBEDDINGS_BIN: &[u8] = include_bytes!("../data/embeddings.bin");
 
 #[derive(Deserialize)]
 struct EmbeddingData {
-    word_embeddings: HashMap<String, Vec<f32>>,
-    emoji_vectors: HashMap<String, Vec<f32>>,
+    word_embeddings: HashMap<String, Vec<f16>>,
+    emoji_vectors: HashMap<String, Vec<f16>>,
 }
 
 pub struct EmojiStylist {
-    word_embeddings: HashMap<String, Vec<f32>>,
-    emoji_vectors: HashMap<String, Vec<f32>>,
+    word_embeddings: HashMap<String, Vec<f16>>,
+    emoji_vectors: HashMap<String, Vec<f16>>,
 }
 
 impl EmojiStylist {
@@ -60,10 +61,10 @@ impl EmojiStylist {
     }
 }
 
-fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
-    let dot = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum::<f32>();
-    let norm_a = a.iter().map(|x| x * x).sum::<f32>().sqrt();
-    let norm_b = b.iter().map(|x| x * x).sum::<f32>().sqrt();
+fn cosine_similarity(a: &[f16], b: &[f16]) -> f32 {
+    let dot = a.iter().zip(b.iter()).map(|(x, y)| x.to_f32() * y.to_f32()).sum::<f32>();
+    let norm_a = a.iter().map(|x| x.to_f32().powi(2)).sum::<f32>().sqrt();
+    let norm_b = b.iter().map(|x| x.to_f32().powi(2)).sum::<f32>().sqrt();
     if norm_a == 0.0 || norm_b == 0.0 {
         return -1.0;
     }
