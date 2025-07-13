@@ -1,102 +1,114 @@
 # SubSlay 💅🏻
 
-🧠✨ **Text to Emoji Transformation powered by Rust + WebAssembly**  
+🧠✨ **Text to Emoji Transformation powered by Rust + WebAssembly**
 
 ---
 
 ## 🧾 Overview
 
-**SubSlay** is a blazing-fast, web-based emoji transformer built in Rust and compiled to WebAssembly.  
-It intelligently converts your text into an emoji-fied expression using semantic similarity and fabulous flair.
+**SubSlay** is a blazing-fast emoji transformer powered by a pure Rust core compiled to WebAssembly, offering semantic text-to-emoji conversion with stylish flair.
 
-The Rust core powers the logic. The frontend is statically hosted via GitHub Pages.
+* The emoji transformation logic lives in the Rust crate `subslay`.
+* The WebAssembly wrapper crate `subslay-wasm` exposes the functionality for web use.
+* The static frontend is hosted via GitHub Pages on the `gh-pages` branch and consumes the WASM package from `subslay-wasm`.
 
-🔗 [Try the Demo](https://andriak.com/subslay/)  
-🔬 Source code lives right here in the `main` branch.
+🔗 [Try the Demo](https://subslay.app/)<br>
+🔬 Source code is maintained in the [`main`](https://github.com/8ria/subslay/tree/main) branch.
 
 ---
 
 ## 💡 Features
 
-- 🦀 Rust-powered emoji transformation logic
-- ⚡ WebAssembly compilation for performance
-- 🧬 Uses GloVe word embeddings + Levenshtein fallback
-- 🌐 Deployed with GitHub Pages
-- 🎨 Sleek animated UI with a gradient-glow glass aesthetic
-- 🔥 Instant transformation with debounced input
+* 🦀 Core emoji transformation implemented in Rust as a reusable crate
+* ⚡ WebAssembly wrapper for fast browser execution
+* 🧬 Uses GloVe embeddings + Levenshtein distance fallback
+* 🌐 Static frontend deployed on GitHub Pages with WASM package auto-updates
+* 🎨 Stylish glassmorphism UI with animated gradient text and emojis
+* 🔥 Instant, debounced input-to-emoji transformation with error handling
 
-> ✨ **Example**: `"Hello, World!"` -> `"👋 🌏"`
+> ✨ **Example**: `"Hello, World!"` → `"👋 🌏"`
 
 ---
 
 ## 🛠️ How It Works
 
-The core Rust logic uses:
-- A mapping of keywords → emojis (`emoji.json`)
-- GloVe embeddings for vector similarity
-- Levenshtein distance for unknown word fallback
-- WebAssembly interface via `wasm-bindgen`
+* The **`subslay` crate** contains the core logic:
+  * Parses `emoji.json` (keyword → emoji map)
+  * Loads GloVe vectors (`glove.txt`) for semantic similarity
+  * Uses Levenshtein distance as a fallback
 
-The frontend:
-- Loads the WASM module (`subslay_bg.wasm`)
-- Loads embeddings and emoji map
-- Lets users type and instantly see the emoji-fied output
+* The **`subslay-wasm` crate** wraps the core with `wasm-bindgen`, exposing a `WasmStylist` class to JavaScript.
+
+* The **frontend**:
+  * Loads the WASM package built by `wasm-pack`
+  * Uses the embedded JSON and GloVe data within the WASM module, avoiding separate static file fetches
+  * Provides a sleek interface for users to input text and see emoji output live
 
 ---
 
-## 🚀 Get Started (Locally)
+## 🚀 Getting Started (Local Development)
 
-### 1. Build the WASM package
+### 1. Clone and build the Rust crates
 
 ```bash
-wasm-pack build --target web
-````
-
-This will create a `pkg/` folder with `subslay.js` and `subslay_bg.wasm`.
+git clone https://github.com/8ria/subslay.git
+cd subslay
+cargo build --release              # Build core crate
+cd ../subslay-wasm
+wasm-pack build --target web       # Build WASM package
+```
 
 ### 2. Serve the frontend
 
-Make sure `index.html`, `pkg/`, and `static/` are in the root. Then serve using:
+Copy or link your `pkg/` folder generated from `subslay-wasm` to your `website/` folder.
 
 ```bash
-python3 -m http.server
-# or use any local dev server of your choice
+cd ../website
+python3 -m http.server 8000
 ```
+
+Open `http://localhost:8000` in your browser.
 
 ---
 
-## 🌍 Deployment
+## 🌍 Deployment Workflow
 
-* The static site is hosted from the [`gh-pages`](https://github.com/8ria/subslay/tree/gh-pages) branch.
+* The [`gh-pages`](https://github.com/8ria/subslay/tree/gh-pages) branch hosts the static site (frontend files + WASM pkg).
+* A GitHub Actions workflow automatically:
+
+  * Builds the WASM package from `subslay-wasm` on `main` branch pushes
+  * Cleans old WASM files from `gh-pages/pkg`
+  * Copies new WASM build into `gh-pages/pkg`
+  * Commits and pushes changes, preserving other assets like `index.html`, `images/`, and `CNAME`
 
 ---
 
 ## 📁 Project Structure
 
-```bash
-subslay/
-├── src/
-│   └── lib.rs               # Rust logic: text → emoji transformer
-├── static/
-│   ├── emoji.json           # Keyword to emoji map
-│   └── glove.txt            # GloVe vectors
-├── pkg/                     # Auto-generated WebAssembly files
-├── index.html               # UI and JS logic
-├── Cargo.toml               # Rust project config
-├── LICENSE                  # MIT License
-└── README.md                # You’re here 💅🏻
+```
+main/
+├── subslay/                    # Core Rust crate (logic + data)
+│   ├── Cargo.toml
+│   ├── src/lib.rs
+│   ├── static/
+│   │   ├── emoji.json
+│   │   └── glove.txt
+│   └── README.md
+│
+└── subslay-wasm/               # WASM wrapper crate exposing wasm_bindgen API
+    ├── Cargo.toml
+    └── src/lib.rs
 ```
 
 ---
 
 ## 🧑‍💻 Contributing
 
-Pull requests are welcome! Feel free to:
-
-* Add new emoji mappings
-* Improve GloVe or fallback logic
-* Optimize the Rust or WASM build
-* Beautify the frontend more ✨
+Pull requests are welcome! Consider contributing by:
+* Adding or refining emoji mappings
+* Improving embedding logic or fallback handling
+* Optimizing WASM build or Rust performance
+* Enhancing the frontend UI/UX
 
 ---
 
@@ -106,4 +118,4 @@ MIT © AndriaK
 
 ---
 
-> *"Built to slay, not obey."* 💅
+> *"Built to slay, not obey."* 💅🏻
