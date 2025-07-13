@@ -9,7 +9,13 @@ repository = "https://github.com/8ria/subslay"
 readme = "README.md"
 keywords = ["emoji", "text", "emoji-mapping", "natural-language"]
 categories = ["text-processing", "command-line-utilities"]
-exclude = ["/static/*", "target/*"]
+include = [
+  "src/**",
+  "static/emoji.json",
+  "static/glove.txt",
+  "Cargo.toml",
+  "README.md",
+]
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
