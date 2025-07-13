@@ -3,8 +3,8 @@ import numpy as np
 from collections import Counter
 
 EMOJI_JSON_PATH = "emoji.json"
-GLOVE_PATH = "../data/glove.txt"
-OUTPUT_PATH = "../data/emoji.txt"
+GLOVE_PATH = "glove.txt"
+OUTPUT_PATH = "emoji.txt"
 VECTOR_DIM = 50
 
 print("Loading GloVe...")
