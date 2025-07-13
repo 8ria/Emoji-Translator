@@ -1,39 +1,4 @@
-## 🧾 What is SubSlay?
-
-**SubSlay** is a text-to-emoji transformer that turns plain text into expressive emoji sequences — powered by semantic similarity (via GloVe vectors), direct keyword mappings, and fuzzy Levenshtein fallback.
-
-> ✨ `"Hello, world!"` → `"👋 🌍"`
-
-This crate is built entirely in Rust and is compatible with **native binaries** and **WebAssembly**, with no external files or setup required.
-
----
-
-## 🌐 Try It Live
-
-🔗 [SubSlay.app](https://subslay.app) — Web demo powered by this crate
-
----
-
-## 🛠 Features
-
-- 🦀 **Pure Rust** (no WASM bindings inside)
-- 📦 **No setup** — GloVe + emoji mappings are embedded
-- 💡 **Keyword match**, **cosine similarity**, and **Levenshtein** fallback
-- 🧪 Fully tested
-- 🌍 Easily used in WASM apps (via your own wrapper)
-
----
-
-## ✨ Usage
-
-Add it to your project:
-
-```toml
-[dependencies]
-subslay = "0.1.8"
-````
-
-Use it in Rust:
+**SubSlay** converts plain text into emoji sequences using semantic similarity with pre-embedded GloVe vectors and emoji keyword mappings — all bundled inside a pure Rust crate.
 
 ```rust
 use subslay::EmojiStylist;
@@ -47,65 +12,162 @@ fn main() {
 
 ---
 
-## 🧠 How It Works
+## 🧾 What is SubSlay?
 
-SubSlay internally loads:
+**SubSlay** is a Rust library that transforms ordinary text into emoji sequences that capture the **semantic meaning** of each word. It uses **pre-trained GloVe word embeddings** and maps them to emojis using embedded semantic vectors — all packed into the crate itself.
 
-* `emoji.json` — maps emojis to keyword lists
-* `glove.txt` — GloVe-style word embeddings
+This enables fast, expressive emoji translation **fully offline** with zero API calls or external resources.
 
-Then it:
+It’s ideal for:
 
-1. Matches input words to emoji keywords
-2. Uses **cosine similarity** to suggest close matches
-3. Falls back to **Levenshtein distance** if all else fails
-
-All logic is pure Rust and runs without filesystem access — ideal for embedded and WASM environments.
+* ✨ Chat apps
+* 🤖 Discord bots
+* 📱 Social media tools
+* 💻 Terminal utilities
 
 ---
 
-## 📁 Project Layout
+## 🚀 Features
 
-```bash
-subslay/
-├── src/
-│   └── lib.rs            # Emoji transformer engine
-├── static/
-│   ├── emoji.json        # Emoji → keywords (embedded)
-│   └── glove.txt         # GloVe embeddings (embedded)
-├── Cargo.toml
-└── README.md
+* 🦀 **Pure Rust** — no runtime dependencies
+* 📦 **Embedded embeddings** — GloVe + emoji vectors bundled as a single `embeddings.bin` file
+* 🧠 **Cosine similarity** with emoji semantics for contextual matching
+* 🆘 **Fallback handling** for unknown or out-of-vocab words
+* 🌐 **WASM-compatible** — works in browser/Edge without filesystem or network access
+* 💨 **Blazing fast & offline** — powered by `bincode` and quantized vector loading
+* 🪶 **Tiny footprint** — uses `f16` (half-precision) vectors for compact size
+
+---
+
+## 📦 Installation
+
+Add SubSlay to your `Cargo.toml`:
+
+```toml
+[dependencies]
+subslay = "0.1.9"
 ```
 
 ---
 
-## ✅ Test
+## 🛠️ Usage
 
-Run tests with:
+```rust
+use subslay::EmojiStylist;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let stylist = EmojiStylist::new()?;
+    let emojis = stylist.slay("happy pizza");
+    println!("{:?}", emojis); // e.g. ["😊", "🍕"]
+    Ok(())
+}
+```
+
+### Example:
+
+```rust
+let stylist = EmojiStylist::new()?;
+let sentence = "I love pizza and cats";
+let emojis = stylist.slay(sentence);
+println!("Emojis: {:?}", emojis);
+// Possible output: ["❤️", "🍕", "😺"]
+```
+
+---
+
+## ⚙️ How It Works (Under the Hood)
+
+SubSlay embeds a pre-serialized binary file (`embeddings.bin`) using `include_bytes!`, which includes:
+
+* 🔤 A `HashMap<String, Vec<f16>>` of words mapped to **quantized 50D GloVe embeddings**
+* 😎 A `HashMap<String, Vec<f16>>` of emojis mapped to semantic emoji vectors
+
+When `.slay(&str)` is called:
+
+1. The input is cleaned (only letters and spaces).
+2. Words are lowercased and split.
+3. Each word:
+
+   * Tries to fetch a GloVe embedding
+   * Computes cosine similarity with all emoji vectors
+   * Selects the closest emoji
+   * Falls back to `"@"` if no match is found
+
+Cosine similarity is calculated like this:
+
+```rust
+fn cosine_similarity(a: &[f16], b: &[f16]) -> f32 {
+    let dot = a.iter().zip(b.iter()).map(|(x, y)| x.to_f32() * y.to_f32()).sum::<f32>();
+    let norm_a = a.iter().map(|x| x.to_f32().powi(2)).sum::<f32>().sqrt();
+    let norm_b = b.iter().map(|x| x.to_f32().powi(2)).sum::<f32>().sqrt();
+    if norm_a == 0.0 || norm_b == 0.0 {
+        return -1.0;
+    }
+    dot / (norm_a * norm_b)
+}
+```
+
+---
+
+## 🎯 API Overview
+
+| Method                | Description                                                                    |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `EmojiStylist::new()` | Initializes the struct by deserializing the embedded binary file               |
+| `stylist.slay(&str)`  | Translates each word in the input into a matching emoji, returns `Vec<String>` |
+
+---
+
+## 🧪 Testing
+
+SubSlay includes unit tests for:
+
+* ✅ Correct output for known words like `"pizza"`
+* ✅ Full sentence translation
+* ✅ Unknown/fallback behavior
+* ✅ Empty input
+
+Run tests:
 
 ```bash
 cargo test
 ```
 
-All embeddings and mappings are embedded, so no setup is needed.
+---
+
+## 📁 Package Contents
+
+* `src/lib.rs` — Main logic for translation and similarity
+* `data/embeddings.bin` — Serialized, quantized GloVe and emoji vectors
+* `Cargo.toml` — Dependency config
+* `README.md` — You’re reading it
 
 ---
 
-## 🤝 Contribute
+## 🧑‍💻 Developer Notes
 
-Feel free to open issues or pull requests for:
-
-* New emoji suggestions
-* Better embedding support
-* Fallback improvements
-* WASM wrappers or examples
+* Embeddings are stored using **quantized half-precision floats (`f16`)** to reduce file size
+* All data is serialized using `bincode`
+* Pre-trained **GloVe 50d** embeddings are used for English vocabulary
+* The emoji vectors are handcrafted or generated using centroid-like heuristics
 
 ---
 
-## 📄 License
+## 💡 Future Plans
+
+* Weighted phrase-to-emoji aggregation
+* Fuzzy matching for slang and typos
+* Custom user dictionaries or theme packs
+* Parallel or batch `.slay()` calls
+* Embedding compression + streaming load
+
+---
+
+## 📜 License
 
 MIT © [AndriaK](mailto:hey@andriak.com)<br>
-GitHub: [github.com/8ria/subslay](https://github.com/8ria/subslay)
+[GitHub Repository](https://github.com/8ria/subslay)<br>
+[Live Demo](https://subslay.app/)
 
 ---
 
