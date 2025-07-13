@@ -1,0 +1,14 @@
+[package]
+name = "discord-bot"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serenity = { version = "0.12", features = ["client", "gateway", "rustls_backend", "cache"] }
+tokio = { version = "1.38", features = ["macros", "rt-multi-thread"] }
+dotenv = "0.15"
+subslay = "0.1.8"
+
+[profile.release]
+opt-level = 3
+lto = true
