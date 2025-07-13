@@ -118,4 +118,12 @@ MIT © AndriaK
 
 ---
 
+## 🎉 SubSlay Tools
+
+- 🧠 `subslay` — Core Rust emoji binding crate
+- 💬 `discord-bot` — Fun emoji Discord bot using SubSlay
+- 🌐 `subslay.app` — Web client for live emoji translation
+
+---
+
 > *"Built to slay, not obey."* 💅🏻
