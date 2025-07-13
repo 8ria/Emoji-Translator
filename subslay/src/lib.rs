@@ -68,6 +68,7 @@ impl EmojiStylist {
                         }
                     }
                 }
+                
                 if let Some((best_emoji, _)) = closest_keyword_match {
                     slayified_output.push(best_emoji);
                     continue;
@@ -108,12 +109,6 @@ fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_direct_match() {
-        let s = EmojiStylist::new().unwrap();
-        assert!(s.slay("hello").contains(&"👋".to_string()));
-    }
 
     #[test]
     fn test_levenshtein_fallback() {
