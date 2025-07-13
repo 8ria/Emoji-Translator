@@ -1,0 +1,23 @@
+[package]
+name = "subslay"
+version = "0.1.0"
+edition = "2021"
+authors = ["AndriaK <hey@andriaK.com>"]
+description = "SubSlay: Text → emoji 💅🏻 Powered by Rust + WASM"
+license = "MIT"
+repository = "https://github.com/8ria/subslay"
+readme = "README.md"
+keywords = ["emoji", "text-to-emoji", "wasm", "rust-wasm"]
+categories = ["wasm", "text-processing", "web-programming"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+serde-wasm-bindgen = "0.6"
+subslay = "0.1.8"
+
+[profile.release]
+opt-level = 3
+lto = true
