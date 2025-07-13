@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -24,10 +23,12 @@ jobs:
       - name: 📦 Install wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
 
-      - name: 🔨 Build WASM to pkg/
+      - name: 🔨 Build WASM to pkg/ in subslay-wasm/
+        working-directory: ./subslay-wasm
         run: wasm-pack build --target web --out-dir pkg
 
       - name: 🧹 Remove unwanted files from pkg/
+        working-directory: ./subslay-wasm
         run: |
           rm -f pkg/README.md
           rm -f pkg/package.json
@@ -35,6 +36,7 @@ jobs:
           rm -f pkg/subslay_bg.wasm.d.ts
 
       - name: 📁 Show cleaned pkg contents (debug)
+        working-directory: ./subslay-wasm
         run: ls -lah ./pkg
 
       - name: 🗂️ Clone existing gh-pages branch
@@ -44,11 +46,14 @@ jobs:
           git clone --branch gh-pages --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} gh-pages
           rm -rf gh-pages/pkg
           mkdir -p gh-pages/pkg
-          cp -r pkg/* gh-pages/pkg/
+          cp -r subslay-wasm/pkg/* gh-pages/pkg/
 
-      - name: 🚀 Push updated pkg/ to gh-pages
+          # Also copy your website static files (index.html, style.css, etc) to gh-pages root
+          cp -r website/* gh-pages/
+
+      - name: 🚀 Push updated pkg/ and website to gh-pages
         run: |
           cd gh-pages
-          git add pkg
-          git commit -m "🚀 Update pkg folder from ${{ github.sha }}" || echo "No changes to commit"
+          git add .
+          git commit -m "🚀 Update website and pkg from ${{ github.sha }}" || echo "No changes to commit"
           git push origin gh-pages
