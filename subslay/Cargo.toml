@@ -11,16 +11,13 @@ keywords = ["emoji", "text", "emoji-mapping", "natural-language"]
 categories = ["text-processing", "command-line-utilities"]
 include = [
   "src/**",
-  "static/emoji.json",
-  "static/glove.txt",
+  "data/emoji.txt",
+  "data/glove.txt",
   "Cargo.toml",
   "README.md",
 ]
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-strsim = "0.11.1"
 
 [profile.release]
 opt-level = 3
