@@ -1,6 +1,6 @@
 import json
 import numpy as np
-from collections import Counter #❓
+from collections import Counter
 
 EMOJI_JSON_PATH = "emoji.json"
 GLOVE_PATH = "../data/glove.txt"
