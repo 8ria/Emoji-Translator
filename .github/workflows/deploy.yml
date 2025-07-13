@@ -48,9 +48,6 @@ jobs:
           mkdir -p gh-pages/pkg
           cp -r subslay-wasm/pkg/* gh-pages/pkg/
 
-          # Also copy your website static files (index.html, style.css, etc) to gh-pages root
-          cp -r website/* gh-pages/
-
       - name: 🚀 Push updated pkg/ and website to gh-pages
         run: |
           cd gh-pages
