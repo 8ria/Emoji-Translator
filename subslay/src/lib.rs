@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use strsim::levenshtein;
 use serde::Deserialize;
 use half::f16;
 
@@ -41,22 +42,35 @@ impl EmojiStylist {
         let mut output = vec![];
 
         for word in words {
-            if let Some(word_vec) = self.word_embeddings.get(&word) {
-                let best_emoji = self.emoji_vectors
+            let mut word_vec = self.word_embeddings.get(&word);
+
+            let mut emoji = word_vec.and_then(|vec| {
+                self.emoji_vectors
                     .iter()
-                    .map(|(emoji, vec)| (emoji, cosine_similarity(word_vec, vec)))
-                    .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+                    .map(|(emoji, em_vec)| (emoji, cosine_similarity(vec, em_vec)))
+                    .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+                    .map(|(emoji, _)| emoji.clone())
+            });
 
-                if let Some((emoji, _)) = best_emoji {
-                    output.push(emoji.clone());
-                } else {
-                    output.push("@".to_string());
+            if emoji.is_none() {
+                if let Some((closest_word, _)) = self.word_embeddings
+                    .keys()
+                    .map(|k| (k, levenshtein(&word, k)))
+                    .min_by_key(|(_, dist)| *dist)
+                {
+                    word_vec = self.word_embeddings.get(closest_word);
+
+                    emoji = word_vec.and_then(|vec| {
+                        self.emoji_vectors
+                            .iter()
+                            .map(|(emoji, em_vec)| (emoji, cosine_similarity(vec, em_vec)))
+                            .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+                            .map(|(emoji, _)| emoji.clone())
+                    });
                 }
-            } else {
-                output.push("@".to_string());
             }
+            output.push(emoji.unwrap_or_else(|| "@".to_string()));
         }
-
         output
     }
 }
@@ -89,14 +103,6 @@ mod tests {
         let result = stylist.slay("happy pizza love");
         assert_eq!(result.len(), 3);
         assert!(result.iter().all(|e| e != "@"), "All words should return valid emojis");
-    }
-
-    #[test]
-    fn test_fallback_for_unknown_word() {
-        let stylist = EmojiStylist::new().expect("Failed to load embeddings");
-        let result = stylist.slay("qwertyasdf");
-        assert_eq!(result.len(), 1);
-        assert_eq!(result[0], "@", "Unknown word should fallback to '@'");
     }
 
     #[test]
