@@ -15,8 +15,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+subslay = { path = "../subslay" }
 serde-wasm-bindgen = "0.6"
-subslay = "0.1.9"
 
 [profile.release]
 opt-level = 3
