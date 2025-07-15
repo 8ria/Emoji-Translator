@@ -45,44 +45,58 @@ impl EmojiStylist {
         let mut output = vec![];
 
         for word in words {
-            let mut word_vec = self.word_embeddings.get(&word);
+            let mut chosen_emoji: Option<String> = None;
 
-            let mut emoji = word_vec.and_then(|vec| {
-                self.emoji_vectors
-                    .iter()
-                    .map(|(emoji, em_vec)| {
-                        let mut sim = cosine_similarity(vec, em_vec);
-
-                        if let Some(keywords) = self.emoji_keywords.get(emoji) {
-                            if keywords.iter().any(|k| k == &word) {
-                                sim += 0.15;
-                            }
-                        }
-                        (emoji, sim)
-                    })
-                    .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
-                    .map(|(emoji, _)| emoji.clone())
-            });
-
-            if emoji.is_none() {
-                if let Some((closest_word, _)) = self.word_embeddings
-                    .keys()
-                    .map(|k| (k, levenshtein(&word, k)))
-                    .min_by_key(|(_, dist)| *dist)
-                {
-                    word_vec = self.word_embeddings.get(closest_word);
-
-                    emoji = word_vec.and_then(|vec| {
-                        self.emoji_vectors
-                            .iter()
-                            .map(|(emoji, em_vec)| (emoji, cosine_similarity(vec, em_vec)))
-                            .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
-                            .map(|(emoji, _)| emoji.clone())
-                    });
+            for (emoji, keywords) in &self.emoji_keywords {
+                if keywords.iter().any(|k| k == &word) {
+                    chosen_emoji = Some(emoji.clone());
+                    break;
                 }
             }
-            output.push(emoji.unwrap_or_else(|| "@".to_string()));
+
+            if chosen_emoji.is_none() {
+                let mut word_vec = self.word_embeddings.get(&word);
+
+                chosen_emoji = word_vec.and_then(|vec| {
+                    self.emoji_vectors
+                        .iter()
+                        .map(|(emoji, em_vec)| {
+                            let mut sim = cosine_similarity(vec, em_vec);
+
+                            if let Some(keywords) = self.emoji_keywords.get(emoji) {
+                                if keywords.iter().any(|k| k == &word) {
+                                    sim += 0.15;
+                                }
+                            }
+
+                            (emoji, sim)
+                        })
+                        .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+                        .map(|(emoji, _)| emoji.clone())
+                });
+
+                if chosen_emoji.is_none() {
+                    if let Some((closest_word, _)) = self.word_embeddings
+                        .keys()
+                        .map(|k| (k, levenshtein(&word, k)))
+                        .min_by_key(|(_, dist)| *dist)
+                    {
+                        word_vec = self.word_embeddings.get(closest_word);
+
+                        chosen_emoji = word_vec.and_then(|vec| {
+                            self.emoji_vectors
+                                .iter()
+                                .map(|(emoji, em_vec)| (emoji, cosine_similarity(vec, em_vec)))
+                                .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+                                .map(|(emoji, _)| emoji.clone())
+                        });
+                    }
+                }
+            }
+
+            output.push(chosen_emoji.unwrap_or_else(|| "@".to_string()));
         }
+
         output
     }
 }
