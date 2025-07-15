@@ -9,11 +9,13 @@ const EMBEDDINGS_BIN: &[u8] = include_bytes!("../data/embeddings.bin");
 struct EmbeddingData {
     word_embeddings: HashMap<String, Vec<f16>>,
     emoji_vectors: HashMap<String, Vec<f16>>,
+    emoji_keywords: HashMap<String, Vec<String>>,
 }
 
 pub struct EmojiStylist {
     word_embeddings: HashMap<String, Vec<f16>>,
     emoji_vectors: HashMap<String, Vec<f16>>,
+    emoji_keywords: HashMap<String, Vec<String>>,
 }
 
 impl EmojiStylist {
@@ -26,6 +28,7 @@ impl EmojiStylist {
         Ok(EmojiStylist {
             word_embeddings: data.word_embeddings,
             emoji_vectors: data.emoji_vectors,
+            emoji_keywords: data.emoji_keywords,
         })
     }
 
@@ -47,7 +50,16 @@ impl EmojiStylist {
             let mut emoji = word_vec.and_then(|vec| {
                 self.emoji_vectors
                     .iter()
-                    .map(|(emoji, em_vec)| (emoji, cosine_similarity(vec, em_vec)))
+                    .map(|(emoji, em_vec)| {
+                        let mut sim = cosine_similarity(vec, em_vec);
+
+                        if let Some(keywords) = self.emoji_keywords.get(emoji) {
+                            if keywords.iter().any(|k| k == &word) {
+                                sim += 0.15;
+                            }
+                        }
+                        (emoji, sim)
+                    })
                     .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
                     .map(|(emoji, _)| emoji.clone())
             });
