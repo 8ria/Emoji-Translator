@@ -5,7 +5,21 @@ from collections import Counter
 EMOJI_JSON_PATH = "emoji.json"
 GLOVE_PATH = "glove.txt"
 OUTPUT_PATH = "emoji.txt"
+KEYWORDS_OUTPUT_PATH = "emoji_keywords.json"
 VECTOR_DIM = 50
+
+print("Saving emoji keyword map...")
+emoji_keywords = {}
+with open(EMOJI_JSON_PATH, "r", encoding="utf8") as f:
+    full_emoji_data = json.load(f)
+
+for emoji, keywords in full_emoji_data.items():
+    emoji_keywords[emoji] = list(set([kw.lower() for kw in keywords]))
+
+with open(KEYWORDS_OUTPUT_PATH, "w", encoding="utf8") as f:
+    json.dump(emoji_keywords, f)
+
+print(f"✅ Saved emoji_keywords.json with {len(emoji_keywords)} entries")
 
 print("Loading GloVe...")
 glove = {}
