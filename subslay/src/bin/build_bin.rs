@@ -10,6 +10,7 @@ use half::f16;
 struct EmbeddingData {
     word_embeddings: HashMap<String, Vec<f16>>,
     emoji_vectors: HashMap<String, Vec<f16>>,
+    emoji_keywords: HashMap<String, Vec<String>>,
 }
 
 fn main() {
@@ -49,9 +50,18 @@ fn main() {
         }
     }
 
+    let emoji_keywords_path = PathBuf::from("tools/emoji_keywords.json");
+    let emoji_keywords_json = fs::read_to_string(&emoji_keywords_path)
+        .expect("Missing emoji_keywords.json");
+
+    let emoji_keywords: HashMap<String, Vec<String>> =
+        serde_json::from_str(&emoji_keywords_json).expect("Failed to parse emoji_keywords.json");
+
+
     let data = EmbeddingData {
         word_embeddings,
         emoji_vectors,
+        emoji_keywords,
     };
 
     let bin = bincode::serialize(&data).expect("bincode serialization failed");
